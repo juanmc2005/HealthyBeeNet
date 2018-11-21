@@ -214,4 +214,7 @@ dmypy.json
 pyvenv.cfg
 pip-selfcheck.json
 
+# Big files
+bee_dataset/sift_descriptors.npy
+
 # End of https://www.gitignore.io/api/python,pycharm
