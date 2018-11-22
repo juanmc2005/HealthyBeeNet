@@ -36,4 +36,4 @@ test_desc = compute_descriptors(bee_image_dir, [test_x[0]])
 desc_dict = clustering.create_kmeans_dict('bee_dataset/sift_descriptors_train.npy', 10)
 test_hist = clustering.nearest_neghbors(desc_dict, test_desc)
 
-print(test_hist)
+print(clustering.histogram(desc_dict, test_hist))
