@@ -1,4 +1,3 @@
-import numpy as np
 import image as img
 import clustering as clt
 from sklearn.svm import SVC
@@ -14,8 +13,7 @@ def train_svm(img_dir, train_x, train_y, desc_dict):
     :return: a trained SVM
     """
     descriptors = img.compute_descriptors_by_image(img_dir, train_x)
-    histograms = [clt.histogram(desc_dict, clt.nearest_neghbors(desc_dict, ds))
-                  for ds in descriptors]
+    histograms = [clt.histogram(desc_dict, clt.nearest_neghbors(desc_dict, ds)) for ds in descriptors]
     svc = SVC()
     svc.fit(histograms, train_y)
     return svc
