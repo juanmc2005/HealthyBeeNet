@@ -3,19 +3,29 @@ import numpy as np
 from os.path import join
 
 
-def compute_descriptors(images_dir, images, out_file=None):
+def compute_descriptors_by_image(img_dir, images):
+    """
+    Transform a list of bee images into their corresponding SIFT descriptors
+    :param img_dir: the directory where the image files are located
+    :param images: a list of bee image file names to apply SIFT
+    :return: a list of descriptor matrices
+    """
+    return [sift(join(img_dir, file)) for file in images]
+
+
+def compute_descriptors(img_dir, images, out_file=None):
     """
     Transform a bee image dataset into a matrix representing all key
     point descriptors detected by SIFT.
-    :param images_dir: the directory where the image files are located
+    :param img_dir: the directory where the image files are located
     :param images: a list of bee image file names to apply SIFT
     :param out_file: an optional file path to store the descriptors in binary format
     :return: a matrix of shape (k, 128), where k is the number of
         key points extracted by SIFT
     """
-    result = sift(join(images_dir, images[0]))
+    result = sift(join(img_dir, images[0]))
     for file in images[1:]:
-        descriptors = sift(join(images_dir, file))
+        descriptors = sift(join(img_dir, file))
         if descriptors is not None:
             result = np.append(result, descriptors, axis=0)
         else:

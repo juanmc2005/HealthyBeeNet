@@ -1,14 +1,18 @@
 import bee_data as bees
+import image as img
 import clustering
-import image
+import classification as clf
 
 bee_image_dir = 'bee_dataset/bee_imgs'
 metadata = 'bee_dataset/bee_data.csv'
-train_x, test_x, train_y, test_y = bees.split(bees.read_dataset(metadata))
+dataset = bees.read_dataset(bee_image_dir, metadata)
 
-test_desc = image.compute_descriptors(bee_image_dir, [test_x[0]])
+train_x, test_x, train_y, test_y = bees.split(dataset)
 
+print("Creating Descriptor Dictionary")
 desc_dict = clustering.create_kmeans_dict('bee_dataset/sift_descriptors_train.npy', 10)
-test_hist = clustering.nearest_neghbors(desc_dict, test_desc)
+print("Done")
 
-print(clustering.histogram(desc_dict, test_hist))
+print("Training SVM")
+clf.train_svm(bee_image_dir, train_x, train_y, desc_dict)
+print("Done")
