@@ -31,6 +31,25 @@ def read_dataset(img_dir, metadata_file):
             if file in listdir(img_dir)]
 
 
+def read_x_split(filename):
+    """
+    Read previously written bee image data split into a list
+    :param filename: the file with the image file names
+    :return: a list of bee image file names
+    """
+    with open(filename, 'r') as file:
+        return file.readlines()
+
+
+def read_y_split(filename):
+    """
+    Read previously written bee image data split into a list
+    :param filename: the file with the image file names
+    :return: a list of bee image file names
+    """
+    return [label == 'healthy' for label in read_x_split(filename)]
+
+
 def write_dataset(dataset, filename):
     """
     Writes a specific dataset (list of bee image files) to a txt file
