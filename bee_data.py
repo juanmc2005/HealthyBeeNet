@@ -1,5 +1,6 @@
 import pandas as pd
 from os import listdir
+from os.path import join
 from sklearn.model_selection import train_test_split
 
 
@@ -30,12 +31,33 @@ def read_dataset(img_dir, metadata_file):
             if file in listdir(img_dir)]
 
 
-def split(dataset):
+def write_dataset(dataset, filename):
     """
-    Splits the given bee dataset into train and test sets
+    Writes a specific dataset (list of bee image files) to a txt file
+    in the specified file
+    :param dataset: the bee dataset to store
+    :param filename: the file where the dataset will be written
+    :return: nothing
+    """
+    with open(filename, 'w') as file:
+        for image in dataset:
+            file.write(image + '\n')
+
+
+def split(dataset, directory):
+    """
+    Splits the given bee dataset into train and test sets and stores them
+    in the specified directory
     :param dataset: a bee dataset obtained from read_dataset
+    :param directory: a directory
     :return: train_x, test_x, train_y, test_y
     """
     xs = [x for x, _ in dataset]
     ys = [y for _, y in dataset]
-    return train_test_split(xs, ys, test_size=0.2, random_state=1)
+    train_x, test_x, train_y, test_y = train_test_split(xs, ys, test_size=0.2,
+                                                        stratify=ys, random_state=1)
+    write_dataset(train_x, join(directory, 'train_x'))
+    write_dataset(test_x, join(directory, 'test_x'))
+    write_dataset(['healthy' if y else 'unhealthy' for y in train_y], join(directory, 'train_y'))
+    write_dataset(['healthy' if y else 'unhealthy' for y in test_y], join(directory, 'test_y'))
+    return train_x, test_x, train_y, test_y
