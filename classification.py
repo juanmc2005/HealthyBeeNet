@@ -2,7 +2,7 @@ import image as img
 import clustering as clt
 from sklearn.svm import SVC
 from sklearn.naive_bayes import BernoulliNB
-from sklearn.metrics import precision_score, recall_score
+from sklearn.metrics import precision_score, recall_score, accuracy_score
 
 
 def histograms_by_image(img_dir, xs, desc_dict):
@@ -57,7 +57,19 @@ def evaluate(model, img_dir, test_x, test_y, desc_dict):
     :param desc_dict: a list of descriptors representing a dictionary of visual words
     :return: (precision, recall)
     """
-    histograms = histograms_by_image(img_dir, test_x, desc_dict)
-    pred = model.predict(histograms)
-    return precision_score(test_y, pred, average='micro'), \
-        recall_score(test_y, pred, average='micro')
+    pred_y = model.predict(histograms_by_image(img_dir, test_x, desc_dict))
+    return precision_score(test_y, pred_y, average='micro'), \
+        recall_score(test_y, pred_y, average='micro')
+
+
+def accuracy(model, img_dir, test_x, test_y, desc_dict):
+    """
+    Return the accuracy score for the current model in the given test dataset
+    :param model: a previously fit model for beehive health classification
+    :param img_dir: a directory where image files are located
+    :param test_x: a list of bee image files for testing
+    :param test_y: a list of booleans indicating if the hive is healthy for a bee image
+    :param desc_dict: a list of descriptors representing a dictionary of visual words
+    :return: the accuracy of the model
+    """
+    return accuracy_score(test_y, model.predict(histograms_by_image(img_dir, test_x, desc_dict)))

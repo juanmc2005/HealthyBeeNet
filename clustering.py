@@ -1,16 +1,14 @@
-import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 
 
-def create_kmeans_dict(descriptors_file, k):
+def create_kmeans_dict(descriptors, k):
     """
     Creates a dictionary of descriptors using K Means clustering
-    :param descriptors_file: the file where the descriptor set is stored
+    :param descriptors: a list of SIFT descriptors
     :param k: the number of clusters to generate
     :return: a descriptor dictionary of shape (k, d) where d is the descriptor size
     """
-    descriptors = np.load(descriptors_file)
     kmeans = KMeans(n_clusters=k, random_state=1)
     kmeans.fit(descriptors)
     return kmeans.cluster_centers_

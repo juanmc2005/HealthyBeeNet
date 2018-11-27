@@ -35,6 +35,15 @@ def compute_descriptors(img_dir, images, out_file=None):
     return result
 
 
+def load_descriptors(filename):
+    """
+    Load previously saved image descriptors
+    :param filename: the name of the file with the descriptors
+    :return: a list of SIFT descriptors of size 128
+    """
+    return np.load(filename)
+
+
 def sift(image):
     """
     Applies the SIFT algorithm to an image
