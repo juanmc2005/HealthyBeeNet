@@ -38,7 +38,7 @@ def read_x_split(filename):
     :return: a list of bee image file names
     """
     with open(filename, 'r') as file:
-        return file.readlines()
+        return [line.strip() for line in file.readlines()]
 
 
 def read_y_split(filename):
