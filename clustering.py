@@ -1,4 +1,4 @@
-from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -9,7 +9,7 @@ def create_kmeans_dict(descriptors, k):
     :param k: the number of clusters to generate
     :return: a descriptor dictionary of shape (k, d) where d is the descriptor size
     """
-    kmeans = KMeans(n_clusters=k, random_state=1)
+    kmeans = MiniBatchKMeans(n_clusters=k, random_state=1)
     kmeans.fit(descriptors)
     return kmeans.cluster_centers_
 
@@ -28,14 +28,13 @@ def nearest_neghbors(descriptor_dict, descs):
 
 def histogram(descriptor_dict, visual_words):
     """
-    Calculates a frequency histogram of a list of visual words for
+    Calculates a histogram with the apparitions of a list of visual words in
     a given descriptor dictionary
     :param descriptor_dict: a descriptor dictionary like in create_kmeans_dict
     :param visual_words: a list of indices corresponding to descriptors in descriptor_dict
-    :return: a list of visual word frequencies of length len(descriptor_dict)
+    :return: a list of visual word apparitions of length len(descriptor_dict)
     """
-    nw = len(visual_words)
     freqs = [0 for _ in range(len(descriptor_dict))]
     for w in visual_words:
         freqs[w] += 1
-    return [x / nw for x in freqs]
+    return freqs
