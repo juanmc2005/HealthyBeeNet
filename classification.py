@@ -26,7 +26,7 @@ def train_svm(img_dir, train_x, train_y, desc_dict):
     :return: a trained SVM
     """
     histograms = histograms_by_image(img_dir, train_x, desc_dict)
-    svc = SVC(C=10, random_state=1)
+    svc = SVC(C=10, gamma='scale', random_state=1)
     svc.fit(histograms, train_y)
     return svc
 
