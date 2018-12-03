@@ -24,5 +24,5 @@ opt.find_best_k(BernoulliNB(), bee_image_dir, train_x, train_y, descriptors)
 k = opt.find_best_k(SVC(C=10, random_state=1), bee_image_dir, train_x, train_y, descriptors)
 
 # Use best SVM K to print its 10-fold cross validation score
-desc_dict = clst.create_kmeans_dict(descriptors, k=36)
+desc_dict = clst.create_kmeans_dict(descriptors, k=k)
 print(evl.cross_val(SVC(C=10, random_state=1), bee_image_dir, train_x, train_y, desc_dict))
