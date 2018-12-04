@@ -4,6 +4,25 @@ import numpy as np
 import classification as clf
 
 
+def class_precision_recall(y_true, y_pred):
+    """
+    Calculate precision and recall for each class
+    :param y_true: a list of true labels
+    :param y_pred: a list of predicted labels
+    :return: an object with the precision and recall for each class
+    """
+    return {
+        'healthy': {
+            'precision': precision_score(y_true, y_pred, pos_label=1),
+            'recall': recall_score(y_true, y_pred, pos_label=1)
+        },
+        'unhealthy': {
+            'precision': precision_score(y_true, y_pred, pos_label=0),
+            'recall': recall_score(y_true, y_pred, pos_label=0)
+        }
+    }
+
+
 def evaluate(model, img_dir, test_x, test_y, desc_dict):
     """
     Evaluate a classifier using a test bee image dataset and a descriptor dictionary
@@ -16,16 +35,7 @@ def evaluate(model, img_dir, test_x, test_y, desc_dict):
     """
     histograms = clf.histograms_by_image(img_dir, test_x, desc_dict)
     pred_y = model.predict(histograms)
-    return {
-        'healthy': {
-            'precision': precision_score(test_y, pred_y, pos_label=1),
-            'recall': recall_score(test_y, pred_y, pos_label=1)
-        },
-        'unhealthy': {
-            'precision': precision_score(test_y, pred_y, pos_label=0),
-            'recall': recall_score(test_y, pred_y, pos_label=0)
-        }
-    }
+    return class_precision_recall(test_y, pred_y)
 
 
 def cross_val(model, img_dir, train_x, train_y, desc_dict):

@@ -1,5 +1,6 @@
 import bee_data as bees
 import image as imgs
+import evaluation as evl
 import bee_conv_net as bcn
 import tensorflow as tf
 import numpy as np
@@ -7,7 +8,7 @@ import numpy as np
 # Logging
 tf.logging.set_verbosity(tf.logging.INFO)
 
-img_size = 200
+img_size = 48
 dataset_dir = 'bee_dataset/'
 bee_img_dir = dataset_dir + 'bee_imgs/'
 
@@ -21,7 +22,7 @@ test_y = np.asarray(bees.read_y_split_binary(dataset_dir + 'test_y'))
 
 print("Loading dataset images")
 
-# 4133 RGB images of (392x520). Tensor has shape (?, 392, 520, 3)
+# 4133 RGB images of (392x520). Tensor has shape (?, img_size, img_size, 3)
 train_x = np.asarray(imgs.load_images_fit_size(
     bee_img_dir, train_x_files, width=img_size, height=img_size), dtype=np.float32)
 test_x = np.asarray(imgs.load_images_fit_size(
@@ -47,7 +48,7 @@ train_input_fn = tf.estimator.inputs.numpy_input_fn(
 print("Will now train")
 
 # Train the classifier
-bee_classifier.train(input_fn=train_input_fn, steps=20000)
+# bee_classifier.train(input_fn=train_input_fn, steps=20000)
 
 print("Training finished")
 
@@ -60,4 +61,11 @@ eval_input_fn = tf.estimator.inputs.numpy_input_fn(
 
 # Evaluate the classifier
 eval_results = bee_classifier.evaluate(input_fn=eval_input_fn)
-print(eval_results)
+pred_results = bee_classifier.predict(eval_input_fn)
+
+print(eval_results['accuracy'])
+print(eval_results['recall'])
+
+pred_y = [bool(y['classes']) for y in pred_results]
+
+print(evl.class_precision_recall(test_y, pred_y))
