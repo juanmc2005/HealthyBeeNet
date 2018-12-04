@@ -12,13 +12,19 @@ def evaluate(model, img_dir, test_x, test_y, desc_dict):
     :param test_x: a list of bee image files for testing
     :param test_y: a list of booleans indicating if the hive is healthy for a bee image
     :param desc_dict: a list of descriptors representing a dictionary of visual words
-    :return: (precision, recall)
+    :return: an object with the precision and recall for each class
     """
     histograms = clf.histograms_by_image(img_dir, test_x, desc_dict)
     pred_y = model.predict(histograms)
     return {
-        'precision': accuracy_score(test_y, pred_y),
-        'recall': recall_score(test_y, pred_y)
+        'healthy': {
+            'precision': precision_score(test_y, pred_y, pos_label=1),
+            'recall': recall_score(test_y, pred_y, pos_label=1)
+        },
+        'unhealthy': {
+            'precision': precision_score(test_y, pred_y, pos_label=0),
+            'recall': recall_score(test_y, pred_y, pos_label=0)
+        }
     }
 
 
@@ -59,4 +65,4 @@ def recall(model, img_dir, test_x, test_y, desc_dict):
     :param desc_dict: a list of descriptors representing a dictionary of visual words
     :return: the recall of the model
     """
-    return precision_score(test_y, model.predict(clf.histograms_by_image(img_dir, test_x, desc_dict)))
+    return recall_score(test_y, model.predict(clf.histograms_by_image(img_dir, test_x, desc_dict)))
