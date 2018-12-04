@@ -27,11 +27,11 @@ def bee_conv_net_fn(features, labels, mode):
 
     # Dense layer
     flat = tf.reshape(conv2, [-1, 12 * 12 * 16])
-    dense = tf.layers.dense(inputs=flat, units=500, activation=tf.nn.relu)
+    dense = tf.layers.dense(inputs=flat, units=350, activation=tf.nn.relu)
 
     dropout = tf.layers.dropout(
         inputs=dense,
-        rate=0.4,
+        rate=0.6,
         training=(mode == tf.estimator.ModeKeys.TRAIN))
 
     # Logits Layer
@@ -39,7 +39,7 @@ def bee_conv_net_fn(features, labels, mode):
 
     predictions = {
         'classes': tf.argmax(input=logits, axis=1),
-        'probabilities': tf.nn.softmax(logits, name='softmax_tensor')
+        'probabilities': tf.nn.softmax(logits)
     }
 
     if mode == tf.estimator.ModeKeys.PREDICT:
@@ -47,14 +47,19 @@ def bee_conv_net_fn(features, labels, mode):
 
     # Loss function
     loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
+    accuracy = tf.metrics.accuracy(labels, predictions['classes'], name='accuracy')
 
     if mode == tf.estimator.ModeKeys.TRAIN:
-        lr = tf.train.exponential_decay(0.005, tf.train.get_global_step(), 1000, 0.96)
+        lr = tf.train.exponential_decay(0.005, tf.train.get_global_step(), 1000, 0.96, name='learning_rate')
+        logging_hook = tf.train.LoggingTensorHook({
+            "loss": loss,
+            "accuracy": accuracy[1],
+            "learning_rate": lr
+        }, every_n_iter=100)
         optimizer = tf.train.AdamOptimizer(lr)
         train_op = optimizer.minimize(loss, tf.train.get_global_step())
-        return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
+        return tf.estimator.EstimatorSpec(
+            mode=mode, loss=loss, train_op=train_op, training_hooks=[logging_hook])
 
-    eval_metric_ops = {
-        'accuracy': tf.metrics.accuracy(labels, predictions['classes'])
-    }
+    eval_metric_ops = {'accuracy': accuracy}
     return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
