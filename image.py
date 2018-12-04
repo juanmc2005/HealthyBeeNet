@@ -71,3 +71,28 @@ def draw_key_points(image, out_image):
     kps, descriptors = op.detectAndCompute(color, None)
     cv2.drawKeypoints(color, kps, img, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     cv2.imwrite(out_image, img)
+
+
+def load_image(image_file):
+    """
+    Loads an image file into a tensor
+    :param image_file: a file name for a bee image
+    :return: an array of shape (n, m, 3), for an image of shape (n, m)
+    """
+    image = cv2.imread(image_file)
+    return image
+
+
+def load_images_fit_size(img_dir, images, width, height):
+    """
+    Load a list of images and resize them to fit a specific width and height
+    :param img_dir: a directory where the images are located
+    :param images: a list of image file names to load
+    :param width: a desired width for the scaled images
+    :param height: a desired height for the scaled images
+    :return: a list of tensors of shape (width, height, 3)
+    """
+    data = []
+    for image in images:
+        data.append(load_image(join(img_dir, image)))
+    return [cv2.resize(image, (width, height)) for image in data]

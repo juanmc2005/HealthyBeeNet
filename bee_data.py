@@ -43,11 +43,22 @@ def read_x_split(filename):
 
 def read_y_split(filename):
     """
-    Read previously written bee image data split into a list
-    :param filename: the file with the image file names
-    :return: a list of bee image file names
+    Read previously written bee image labels split into a list
+    :param filename: the file with the image labels
+    :return: a list of booleans indicating if the hive is healthy for a bee in an image
     """
     return [label == 'healthy' for label in read_x_split(filename)]
+
+
+def read_y_split_binary(filename):
+    """
+    Read previously written bee image labels split into
+    a list of one hot encoded vectors
+    :param filename: the file with the image labels
+    :return: a list of labels encoded as one hot vectors,
+      where [1, 0] = healthy, and [0, 1] = unhealthy
+    """
+    return [1 if label == 'healthy' else 0 for label in read_x_split(filename)]
 
 
 def write_dataset(dataset, filename):
