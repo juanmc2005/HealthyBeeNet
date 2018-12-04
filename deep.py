@@ -2,6 +2,7 @@ import bee_data as bees
 import image as imgs
 import evaluation as evl
 import bee_conv_net as bcn
+import visual as vsl
 import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -45,7 +46,7 @@ print("Dataset loaded")
 # Build the classifier
 bee_classifier = tf.estimator.Estimator(
     model_fn=bcn.bee_conv_net_fn,
-    model_dir='/tmp/bee_model_test')
+    model_dir='/home/juanma/.bee_convnet_model')
 
 print("Classifier built")
 
@@ -79,5 +80,17 @@ print('Global Accuracy: {}'.format(eval_results['accuracy']))
 
 pred_y = [bool(y['classes']) for y in pred_results]
 
-print('Results in Validation Set:')
+print('Results in Test Set:')
 print(evl.class_precision_recall(test_y, pred_y))
+
+conv1_weights = bee_classifier.get_variable_value('conv2d/kernel')
+conv2_weights = bee_classifier.get_variable_value('conv2d_1/kernel')
+
+# Show conv1 kernels with depth as color
+vsl.show_kernels(conv1_weights, rows=2, columns=4)
+
+# Show conv1 kernels in gray scale
+vsl.show_kernels(conv1_weights, rows=2, columns=4, channels=False)
+
+# Show conv2 kernels in gray scale as depth is too big
+vsl.show_kernels(conv2_weights, rows=4, columns=4, channels=False)
