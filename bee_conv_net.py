@@ -26,11 +26,16 @@ def bee_conv_net_fn(features, labels, mode):
         strides=2)
 
     # Dense layer
-    conv3_flat = tf.reshape(conv2, [-1, 12 * 12 * 16])
-    dense = tf.layers.dense(inputs=conv3_flat, units=500, activation=tf.nn.relu)
+    flat = tf.reshape(conv2, [-1, 12 * 12 * 16])
+    dense = tf.layers.dense(inputs=flat, units=500, activation=tf.nn.relu)
+
+    dropout = tf.layers.dropout(
+        inputs=dense,
+        rate=0.4,
+        training=(mode == tf.estimator.ModeKeys.TRAIN))
 
     # Logits Layer
-    logits = tf.layers.dense(inputs=dense, units=2)
+    logits = tf.layers.dense(inputs=dropout, units=2)
 
     predictions = {
         'classes': tf.argmax(input=logits, axis=1),
@@ -44,14 +49,12 @@ def bee_conv_net_fn(features, labels, mode):
     loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
 
     if mode == tf.estimator.ModeKeys.TRAIN:
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.005)
+        lr = tf.train.exponential_decay(0.005, tf.train.get_global_step(), 1000, 0.96)
+        optimizer = tf.train.AdamOptimizer(lr)
         train_op = optimizer.minimize(loss, tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
-    y_pred = predictions['classes']
-
     eval_metric_ops = {
-        'accuracy': tf.metrics.accuracy(labels, y_pred),
-        'recall': tf.metrics.recall(labels, y_pred)
+        'accuracy': tf.metrics.accuracy(labels, predictions['classes'])
     }
     return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)

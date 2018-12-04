@@ -48,7 +48,7 @@ train_input_fn = tf.estimator.inputs.numpy_input_fn(
 print("Will now train")
 
 # Train the classifier
-# bee_classifier.train(input_fn=train_input_fn, steps=20000)
+bee_classifier.train(input_fn=train_input_fn, steps=20000)
 
 print("Training finished")
 
@@ -63,9 +63,9 @@ eval_input_fn = tf.estimator.inputs.numpy_input_fn(
 eval_results = bee_classifier.evaluate(input_fn=eval_input_fn)
 pred_results = bee_classifier.predict(eval_input_fn)
 
-print(eval_results['accuracy'])
-print(eval_results['recall'])
+print('Global Accuracy: {}'.format(eval_results['accuracy']))
 
 pred_y = [bool(y['classes']) for y in pred_results]
 
+print('Results:')
 print(evl.class_precision_recall(test_y, pred_y))
