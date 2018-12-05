@@ -16,6 +16,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 img_size = 48
 dataset_dir = 'bee_dataset/'
 bee_img_dir = dataset_dir + 'bee_imgs/'
+model_dir = 'beenet'
 
 print("Loading dataset metadata")
 
@@ -46,7 +47,7 @@ print("Dataset loaded")
 # Build the classifier
 bee_classifier = tf.estimator.Estimator(
     model_fn=bcn.bee_conv_net_fn,
-    model_dir='/home/juanma/.bee_convnet_model')
+    model_dir=model_dir)
 
 print("Classifier built")
 
@@ -82,6 +83,13 @@ pred_y = [bool(y['classes']) for y in pred_results]
 
 print('Results in Test Set:')
 print(evl.class_precision_recall(test_y, pred_y))
+
+# Save the model
+# x = tf.feature_column.numeric_column("x")
+# feature_columns = [x]
+# feature_spec = tf.feature_column.make_parse_example_spec(feature_columns)
+# export_input_fn = tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_spec)
+# bee_classifier.export_savedmodel('saved_model', export_input_fn)
 
 conv1_weights = bee_classifier.get_variable_value('conv2d/kernel')
 conv2_weights = bee_classifier.get_variable_value('conv2d_1/kernel')
